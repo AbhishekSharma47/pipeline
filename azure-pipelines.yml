@@ -6,10 +6,33 @@ trigger: none
 
 pool: pool1
 
+parameters:
+  - name: runInit
+    type: boolean
+    default: true
+
+  - name: runValidate
+    type: boolean
+    default: true
+
+  - name: runPlan
+    type: boolean
+    default: true
+  
+  - name: runApply
+    type: boolean
+    default: true
+
+  - name: runShow
+    type: boolean
+    default: true
+
+
 steps:
 
 - task: TerraformTask@5
   displayName: Azure_init
+  condition: eq('${{ parameters.runInit }}', true)
   inputs:
     provider: 'azurerm'
     command: 'init'
@@ -21,12 +44,14 @@ steps:
 
 - task: TerraformTask@5
   displayName: Azure_validate
+  condition: eq('${{ parameters.runValidate }}', true)
   inputs:
     provider: 'azurerm'
     command: 'validate'
 
 - task: TerraformTask@5
   displayName: Azure_plan
+  condition: eq('${{ parameters.runPlan }}', true)
   inputs:
     provider: 'azurerm'
     command: 'plan'
@@ -34,6 +59,7 @@ steps:
 
 - task: TerraformTask@5
   displayName: Azure_apply
+  condition: eq('${{ parameters.runApply }}', true)
   inputs:
     provider: 'azurerm'
     command: 'apply'
@@ -42,25 +68,10 @@ steps:
 
 - task: TerraformTask@5
   displayName: Azure_show
+  condition: eq('${{ parameters.runShow }}', true)
   inputs:
     provider: 'azurerm'
     command: 'show'
     outputTo: 'console'
     outputFormat: 'default'
-    environmentServiceNameAzureRM: 'serviceconnectionab'
-
-- task: TerraformTask@5
-  displayName: Azure_output
-  inputs:
-    provider: 'azurerm'
-    command: 'output'
-    environmentServiceNameAzureRM: 'serviceconnectionab'
-
-- task: TerraformTask@5
-  displayName: Azure_custom
-  inputs:
-    provider: 'azurerm'
-    command: 'custom'
-    outputTo: 'console'
-    customCommand: 'state list'
     environmentServiceNameAzureRM: 'serviceconnectionab'
