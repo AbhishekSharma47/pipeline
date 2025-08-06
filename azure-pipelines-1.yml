@@ -27,27 +27,6 @@ stages:
         backendAzureRmContainerName: 'backend'
         backendAzureRmKey: 'bknd.tfstate'
 
-  - job: Terraform_Validate
-    displayName: Azure Validate
-    dependsOn: Terraform_Init
-    steps:
-    - task: TerraformTask@5
-      displayName: Azure_validate
-      inputs:
-        provider: 'azurerm'
-        command: 'validate'
-
-  - job: Terraform_Plan
-    displayName: Azure Plan
-    dependsOn: Terraform_Validate
-    steps:
-    - task: TerraformTask@5
-      displayName: Azure_plan
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        environmentServiceNameAzureRM: 'serviceconnectionab'
-
 # Stage 2: Apply
 - stage: Apply
   displayName: Terraform Apply
