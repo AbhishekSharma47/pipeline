@@ -62,5 +62,5 @@ steps:
     provider: 'azurerm'
     command: 'custom'
     outputTo: 'console'
-    customCommand: 'terraform state list'
+    customCommand: 'state list'
     environmentServiceNameAzureRM: 'serviceconnectionab'
