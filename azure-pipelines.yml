@@ -1,0 +1,50 @@
+#My First Pipeline for RG.
+
+name: RG_pipeline
+
+trigger: none
+
+pool: pool1
+
+steps:
+
+- task: TerraformTask@5
+  displayName: Azure_init
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'serviceconnectionab'
+    backendAzureRmResourceGroupName: 'backend'
+    backendAzureRmStorageAccountName: 'abackend'
+    backendAzureRmContainerName: 'backend'
+    backendAzureRmKey: 'bknd.tfstate'
+
+- task: TerraformTask@5
+  displayName: Azure_validate
+  inputs:
+    provider: 'azurerm'
+    command: 'validate'
+
+- task: TerraformTask@5
+  displayName: Azure_plan
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'serviceconnectionab'
+
+- task: TerraformTask@5
+  displayName: Azure_apply
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    commandOptions: '--auto-approve'
+    environmentServiceNameAzureRM: 'serviceconnectionab'
+
+- task: TerraformTask@5
+  displayName: Azure_show
+  inputs:
+    provider: 'azurerm'
+    command: 'show'
+    outputTo: 'console'
+    outputFormat: 'default'
+    environmentServiceNameAzureRM: 'serviceconnectionab'
