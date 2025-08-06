@@ -48,3 +48,19 @@ steps:
     outputTo: 'console'
     outputFormat: 'default'
     environmentServiceNameAzureRM: 'serviceconnectionab'
+
+- task: TerraformTask@5
+  displayName: Azure_output
+  inputs:
+    provider: 'azurerm'
+    command: 'output'
+    environmentServiceNameAzureRM: 'serviceconnectionab'
+
+- task: TerraformTask@5
+  displayName: Azure_custom
+  inputs:
+    provider: 'azurerm'
+    command: 'custom'
+    outputTo: 'console'
+    customCommand: 'terraform state list'
+    environmentServiceNameAzureRM: 'serviceconnectionab'
