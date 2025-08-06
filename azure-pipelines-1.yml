@@ -1,0 +1,82 @@
+# My First Pipeline for RG using grouped stages
+
+name: RG_pipeline_stages
+
+trigger: none
+
+pool: pool1
+
+stages:
+
+# Stage 1: Prepare (init, validate, plan)
+- stage: Prepare
+  displayName: Terraform Prepare (Init, Validate, Plan)
+  jobs:
+
+  - job: Terraform_Init
+    displayName: Azure Init
+    steps:
+    - task: TerraformTask@5
+      displayName: Azure_init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'serviceconnectionab'
+        backendAzureRmResourceGroupName: 'backend'
+        backendAzureRmStorageAccountName: 'abackend'
+        backendAzureRmContainerName: 'backend'
+        backendAzureRmKey: 'bknd.tfstate'
+
+  - job: Terraform_Validate
+    displayName: Azure Validate
+    dependsOn: Terraform_Init
+    steps:
+    - task: TerraformTask@5
+      displayName: Azure_validate
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+
+  - job: Terraform_Plan
+    displayName: Azure Plan
+    dependsOn: Terraform_Validate
+    steps:
+    - task: TerraformTask@5
+      displayName: Azure_plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        environmentServiceNameAzureRM: 'serviceconnectionab'
+
+# Stage 2: Apply
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Prepare
+  jobs:
+  - job: Terraform_Apply
+    displayName: Azure Apply
+    steps:
+    - task: TerraformTask@5
+      displayName: Azure_apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'serviceconnectionab'
+
+# Stage 3: Show
+- stage: Show
+  displayName: Terraform Show
+  dependsOn: Apply
+  jobs:
+  - job: Terraform_Show
+    displayName: Azure Show
+    steps:
+    - task: TerraformTask@5
+      displayName: Azure_show
+      inputs:
+        provider: 'azurerm'
+        command: 'show'
+        outputTo: 'console'
+        outputFormat: 'default'
+        environmentServiceNameAzureRM: 'serviceconnectionab'
